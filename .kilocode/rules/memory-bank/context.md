@@ -1,10 +1,10 @@
-# Active Context: Next.js Starter Template
+# Active Context: English Speaking Mastery App
 
 ## Current State
 
-**Template Status**: ✅ Ready for development
+**Project Status**: ✅ Development Complete
 
-The template is a clean Next.js 16 starter with TypeScript and Tailwind CSS 4. It's ready for AI-assisted expansion to build any type of application.
+This is a 45-Day English Speaking Mastery web application built with Next.js 16. It provides a comprehensive curriculum for teaching English speaking with daily lessons, interactive practice, and progress tracking.
 
 ## Recently Completed
 
@@ -14,74 +14,65 @@ The template is a clean Next.js 16 starter with TypeScript and Tailwind CSS 4. I
 - [x] ESLint configuration
 - [x] Memory bank documentation
 - [x] Recipe system for common features
+- [x] **45-Day Curriculum Data Layer** - Complete daily lesson content for all 4 phases
+- [x] **Progress Tracking System** - Zustand-based state management with localStorage persistence
+- [x] **Main Dashboard** - Overview with stats, today's lesson, quick actions
+- [x] **Day-by-Day Lesson View** - Full interactive lesson pages with sound drills, vocabulary, practice
+- [x] **Curriculum Overview Page** - All 45 days organized by phase
+- [x] **Practice Mode** - Interactive sound drills, circumlocution game, hot topics
+- [x] **Standalone Pages** - Hot Topics and Circumlocution games
+- [x] **Interactive Audio** - Text-to-speech integration for pronunciation practice
 
 ## Current Structure
 
 | File/Directory | Purpose | Status |
 |----------------|---------|--------|
-| `src/app/page.tsx` | Home page | ✅ Ready |
-| `src/app/layout.tsx` | Root layout | ✅ Ready |
-| `src/app/globals.css` | Global styles | ✅ Ready |
-| `.kilocode/` | AI context & recipes | ✅ Ready |
+| `src/lib/curriculum.ts` | 45-day curriculum data | ✅ Complete |
+| `src/lib/progress.ts` | Progress tracking with Zustand | ✅ Complete |
+| `src/components/Header.tsx` | Navigation header | ✅ Complete |
+| `src/app/page.tsx` | Dashboard/Home | ✅ Complete |
+| `src/app/day/[day]/page.tsx` | Individual day lessons | ✅ Complete |
+| `src/app/curriculum/page.tsx` | Full curriculum overview | ✅ Complete |
+| `src/app/practice/page.tsx` | Practice mode hub | ✅ Complete |
+| `src/app/hot-topics/page.tsx` | 60-sec speaking challenges | ✅ Complete |
+| `src/app/circumlocution/page.tsx` | Circumlocution game | ✅ Complete |
 
-## Current Focus
+## Key Features Implemented
 
-The template is ready. Next steps depend on user requirements:
+1. **Daily Lessons**: Each day has sound drills, vocabulary, sentence frames, or fluency skills
+2. **Progress Tracking**: Checkboxes for speaking, word usage, homework completion
+3. **Interactive Practice**: 
+   - Sound drills with text-to-speech
+   - Vocabulary practice with audio
+   - Circumlocution game (describe without naming)
+   - Hot Topics 60-second challenges
+4. **Responsive Design**: Works on mobile and desktop
+5. **Persistent State**: Progress saved to localStorage
 
-1. What type of application to build
-2. What features are needed
-3. Design/branding preferences
+## Tech Stack
 
-## Quick Start Guide
+- Next.js 16 with App Router
+- React 19
+- TypeScript 5.9
+- Tailwind CSS 4
+- Zustand for state management
+- Bun as package manager
 
-### To add a new page:
+## Quick Start
 
-Create a file at `src/app/[route]/page.tsx`:
-```tsx
-export default function NewPage() {
-  return <div>New page content</div>;
-}
+Run the development server:
+```bash
+bun dev
 ```
 
-### To add components:
-
-Create `src/components/` directory and add components:
-```tsx
-// src/components/ui/Button.tsx
-export function Button({ children }: { children: React.ReactNode }) {
-  return <button className="px-4 py-2 bg-blue-600 text-white rounded">{children}</button>;
-}
+Build for production:
+```bash
+bun run build
 ```
-
-### To add a database:
-
-Follow `.kilocode/recipes/add-database.md`
-
-### To add API routes:
-
-Create `src/app/api/[route]/route.ts`:
-```tsx
-import { NextResponse } from "next/server";
-
-export async function GET() {
-  return NextResponse.json({ message: "Hello" });
-}
-```
-
-## Available Recipes
-
-| Recipe | File | Use Case |
-|--------|------|----------|
-| Add Database | `.kilocode/recipes/add-database.md` | Data persistence with Drizzle + SQLite |
-
-## Pending Improvements
-
-- [ ] Add more recipes (auth, email, etc.)
-- [ ] Add example components
-- [ ] Add testing setup recipe
 
 ## Session History
 
 | Date | Changes |
 |------|---------|
-| Initial | Template created with base setup |
+| Initial | Base Next.js template created |
+| + | 45-Day English Speaking Mastery app implemented |
