@@ -1,15 +1,66 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { curriculum, hotTopics, circumlocutionObjects, circumlocutionPlaces } from "@/lib/curriculum";
 import Link from "next/link";
 
 export default function PracticePage() {
-  const [activeTab, setActiveTab] = useState<"drills" | "roleplay" | "topics">("drills");
+  const [activeTab, setActiveTab] = useState<"drills" | "roleplay" | "topics" | "questions" | "live">("drills");
   const [currentDrillIndex, setCurrentDrillIndex] = useState(0);
   const [showAnswer, setShowAnswer] = useState(false);
   const [circumlocutionType, setCircumlocutionType] = useState<"objects" | "places">("objects");
   const [currentItemIndex, setCurrentItemIndex] = useState(0);
+  const [practiceQuestions, setPracticeQuestions] = useState<any[]>([]);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [liveSessions, setLiveSessions] = useState<any[]>([]);
+  const [currentSession, setCurrentSession] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const loadPracticeQuestions = async () => {
+    try {
+      const res = await fetch('/api/questions?type=practice');
+      const data = await res.json();
+      setPracticeQuestions(data || []);
+    } catch (error) {
+      console.error("Failed to load practice questions:", error);
+      setPracticeQuestions([]);
+    }
+  };
+
+  const loadLiveSessions = async () => {
+    try {
+      const res = await fetch('/api/live-sessions');
+      const data = await res.json();
+      setLiveSessions(data || []);
+      if (data && data.length > 0) {
+        setCurrentSession(data[0]);
+      }
+    } catch (error) {
+      console.error("Failed to load live sessions:", error);
+      setLiveSessions([]);
+    }
+  };
+
+  useEffect(() => {
+    // Load data after a short delay to ensure DB is ready
+    setTimeout(() => {
+      loadPracticeQuestions();
+      loadLiveSessions();
+      setIsLoading(false);
+    }, 100);
+  }, []);
+
+  const nextQuestion = () => {
+    setCurrentQuestionIndex((prev) => (prev + 1) % practiceQuestions.length);
+  };
+
+  const nextSession = () => {
+    setCurrentSession((prev: any) => {
+      const currentIndex = liveSessions.findIndex(s => s.id === prev?.id);
+      const nextIndex = (currentIndex + 1) % liveSessions.length;
+      return liveSessions[nextIndex] || null;
+    });
+  };
 
   // Sound drills from Phase 1
   const soundDrills = curriculum
@@ -54,7 +105,7 @@ export default function PracticePage() {
         </div>
 
         {/* Tabs */}
-        <div className="flex justify-center gap-2 mb-8">
+        <div className="flex justify-center gap-2 mb-8 flex-wrap">
           <button
             onClick={() => setActiveTab("drills")}
             className={`px-6 py-3 rounded-xl font-medium transition-all ${
@@ -85,10 +136,30 @@ export default function PracticePage() {
           >
             🔥 Hot Topics
           </button>
+          <button
+            onClick={() => setActiveTab("questions")}
+            className={`px-6 py-3 rounded-xl font-medium transition-all ${
+              activeTab === "questions"
+                ? "bg-yellow-500 text-white"
+                : "bg-neutral-800 text-neutral-400 hover:text-white"
+            }`}
+          >
+            📝 Practice Questions
+          </button>
+          <button
+            onClick={() => setActiveTab("live")}
+            className={`px-6 py-3 rounded-xl font-medium transition-all ${
+              activeTab === "live"
+                ? "bg-red-500 text-white"
+                : "bg-neutral-800 text-neutral-400 hover:text-white"
+            }`}
+          >
+            🎛️ Live Learning
+          </button>
         </div>
 
         {/* Sound Drills Tab */}
-        {activeTab === "drills" && (
+        {activeTab === "drills" && soundDrills.length > 0 && (
           <div className="max-w-3xl mx-auto">
             <div className="bg-gradient-to-br from-neutral-900 to-neutral-800 rounded-2xl p-8 border border-neutral-700">
               <div className="flex items-center justify-between mb-6">
@@ -121,7 +192,7 @@ export default function PracticePage() {
                       onClick={() => speak(word)}
                       className="px-4 py-2 bg-neutral-800 hover:bg-neutral-700 rounded-lg transition-colors"
                     >
-                      {word} 🔊
+                      {word} 🎤
                     </button>
                   ))}
                 </div>
@@ -137,7 +208,7 @@ export default function PracticePage() {
                       onClick={() => speak(sentence)}
                       className="block w-full text-left px-4 py-3 bg-neutral-800 hover:bg-neutral-700 rounded-lg transition-colors"
                     >
-                      &quot;{sentence}&quot; 🔊
+                      &quot;{sentence}&quot; 🎤
                     </button>
                   ))}
                 </div>
@@ -155,8 +226,139 @@ export default function PracticePage() {
           </div>
         )}
 
+        {/* Practice Questions Tab */}
+        {activeTab === "questions" && (
+          <div className="max-w-3xl mx-auto">
+            {practiceQuestions.length > 0 ? (
+              <div className="bg-gradient-to-br from-neutral-900 to-neutral-800 rounded-2xl p-8 border border-neutral-700">
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center gap-3">
+                    <span className="text-3xl">📝</span>
+                    <div>
+                      <h2 className="text-xl font-bold">Practice Questions</h2>
+                      <p className="text-neutral-400 text-sm">{currentQuestionIndex + 1} of {practiceQuestions.length}</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={nextQuestion}
+                    className="px-4 py-2 bg-neutral-700 hover:bg-neutral-600 rounded-lg text-sm"
+                  >
+                    Next Question →
+                  </button>
+                </div>
+
+                <div className="mb-6">
+                  <h3 className="text-xl font-bold text-yellow-400 mb-4">
+                    {practiceQuestions[currentQuestionIndex].question}
+                  </h3>
+                  <p className="text-neutral-400 mb-4">
+                    Category: {practiceQuestions[currentQuestionIndex].category} | Difficulty: {practiceQuestions[currentQuestionIndex].difficulty}
+                  </p>
+                  <div className="p-4 bg-neutral-800 rounded-lg">
+                    <p className="text-neutral-300">Answer: {practiceQuestions[currentQuestionIndex].answer}</p>
+                  </div>
+                </div>
+
+                <div className="mt-8 pt-6 border-t border-neutral-700">
+                  <button
+                    onClick={() => speak(practiceQuestions[currentQuestionIndex].question)}
+                    className="px-4 py-2 bg-neutral-700 hover:bg-neutral-600 rounded-lg text-sm"
+                  >
+                    Read Question 🎤
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="bg-gradient-to-br from-neutral-900 to-neutral-800 rounded-2xl p-8 border border-neutral-700 text-center">
+                <p className="text-neutral-400">No practice questions yet.</p>
+                <p className="text-neutral-500 text-sm mt-2">
+                  Visit the <Link href="/admin" className="text-yellow-400 hover:underline">Admin Dashboard</Link> to add questions.
+                </p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Live Learning Tab */}
+        {activeTab === "live" && (
+          <div className="max-w-3xl mx-auto">
+            {liveSessions.length > 0 ? (
+              <div className="bg-gradient-to-br from-neutral-900 to-neutral-800 rounded-2xl p-8 border border-neutral-700">
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center gap-3">
+                    <span className="text-3xl">🎹</span>
+                    <div>
+                      <h2 className="text-xl font-bold">Live Learning Sessions</h2>
+                      <p className="text-neutral-400 text-sm">Join interactive sessions</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={nextSession}
+                    className="px-4 py-2 bg-neutral-700 hover:bg-neutral-600 rounded-lg text-sm"
+                  >
+                    Next Session →
+                  </button>
+                </div>
+
+                {currentSession && (
+                  <div className="mb-6">
+                    <h3 className="text-xl font-bold text-red-400 mb-4">
+                      {currentSession.title}
+                    </h3>
+                    <p className="text-neutral-400 mb-4">
+                      {currentSession.description}
+                    </p>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="bg-neutral-800 p-4 rounded-lg">
+                        <p className="text-neutral-300 font-medium">Category:</p>
+                        <p className="text-neutral-400">{currentSession.category}</p>
+                      </div>
+                      <div className="bg-neutral-800 p-4 rounded-lg">
+                        <p className="text-neutral-300 font-medium">Difficulty:</p>
+                        <p className="text-neutral-400">{currentSession.difficulty}</p>
+                      </div>
+                      <div className="bg-neutral-800 p-4 rounded-lg">
+                        <p className="text-neutral-300 font-medium">Participants:</p>
+                        <p className="text-neutral-400">{currentSession.current_participants}/{currentSession.max_participants}</p>
+                      </div>
+                      <div className="bg-neutral-800 p-4 rounded-lg">
+                        <p className="text-neutral-300 font-medium">Status:</p>
+                        <p className="text-neutral-400">
+                          {currentSession.is_active ? "Active" : "Inactive"}
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => {
+                        // Join session logic would go here
+                        console.log('Joining session:', currentSession.id);
+                      }}
+                      className="w-full px-6 py-3 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-xl transition-colors mt-4"
+                    >
+                      Join Session
+                    </button>
+                  </div>
+                )}
+
+                <div className="mt-8 pt-6 border-t border-neutral-700">
+                  <p className="text-neutral-400 text-sm">
+                    🎯 Join live sessions to practice speaking with others in real-time!
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div className="bg-gradient-to-br from-neutral-900 to-neutral-800 rounded-2xl p-8 border border-neutral-700 text-center">
+                <p className="text-neutral-400">No active live sessions.</p>
+                <p className="text-neutral-500 text-sm mt-2">
+                  Visit the <Link href="/admin" className="text-red-400 hover:underline">Admin Dashboard</Link> to create a session.
+                </p>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Circumlocution Tab */}
-        {activeTab === "roleplay" && (
+        {activeTab === "roleplay" && currentItems.length > 0 && (
           <div className="max-w-3xl mx-auto">
             <div className="bg-gradient-to-br from-neutral-900 to-neutral-800 rounded-2xl p-8 border border-neutral-700">
               <div className="flex items-center justify-between mb-6">

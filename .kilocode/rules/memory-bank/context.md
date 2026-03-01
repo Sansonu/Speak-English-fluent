@@ -1,4 +1,4 @@
-# Active Context: English Speaking Mastery App
+# Active Context: English Speaking Mastery App with Database
 
 ## Current State
 
@@ -22,6 +22,11 @@ This is a 45-Day English Speaking Mastery web application built with Next.js 16.
 - [x] **Practice Mode** - Interactive sound drills, circumlocution game, hot topics
 - [x] **Standalone Pages** - Hot Topics and Circumlocution games
 - [x] **Interactive Audio** - Text-to-speech integration for pronunciation practice
+- [x] **Database Integration** - SQLite database with better-sqlite3
+- [x] **Practice Questions CRUD** - Add, view, delete practice questions from database
+- [x] **MCQ System** - Create and manage multiple choice questions
+- [x] **Live Learning Sessions** - Create and manage live learning sessions
+- [x] **Admin Dashboard** - Interface for managing all content
 
 ## Current Structure
 
@@ -29,11 +34,16 @@ This is a 45-Day English Speaking Mastery web application built with Next.js 16.
 |----------------|---------|--------|
 | `src/lib/curriculum.ts` | 45-day curriculum data | ✅ Complete |
 | `src/lib/progress.ts` | Progress tracking with Zustand | ✅ Complete |
+| `src/lib/db.ts` | SQLite database connection | ✅ Complete |
+| `src/lib/schema.ts` | Database schemas | ✅ Complete |
+| `src/lib/questions.ts` | Practice questions & MCQ API | ✅ Complete |
+| `src/lib/liveLearning.ts` | Live session management | ✅ Complete |
 | `src/components/Header.tsx` | Navigation header | ✅ Complete |
 | `src/app/page.tsx` | Dashboard/Home | ✅ Complete |
 | `src/app/day/[day]/page.tsx` | Individual day lessons | ✅ Complete |
 | `src/app/curriculum/page.tsx` | Full curriculum overview | ✅ Complete |
 | `src/app/practice/page.tsx` | Practice mode hub | ✅ Complete |
+| `src/app/admin/page.tsx` | Admin dashboard | ✅ Complete |
 | `src/app/hot-topics/page.tsx` | 60-sec speaking challenges | ✅ Complete |
 | `src/app/circumlocution/page.tsx` | Circumlocution game | ✅ Complete |
 
@@ -46,8 +56,17 @@ This is a 45-Day English Speaking Mastery web application built with Next.js 16.
    - Vocabulary practice with audio
    - Circumlocution game (describe without naming)
    - Hot Topics 60-second challenges
-4. **Responsive Design**: Works on mobile and desktop
-5. **Persistent State**: Progress saved to localStorage
+4. **Database Features**:
+   - Practice Questions - Add/view/delete custom questions
+   - MCQ System - Multiple choice questions with explanations
+   - Live Learning - Create interactive sessions
+5. **Admin Dashboard**:
+   - Add practice questions
+   - Add MCQs with options and explanations
+   - Create live learning sessions
+   - View and manage all content
+6. **Responsive Design**: Works on mobile and desktop
+7. **Persistent State**: Progress saved to localStorage
 
 ## Tech Stack
 
@@ -55,6 +74,7 @@ This is a 45-Day English Speaking Mastery web application built with Next.js 16.
 - React 19
 - TypeScript 5.9
 - Tailwind CSS 4
+- SQLite with better-sqlite3
 - Zustand for state management
 - Bun as package manager
 
@@ -76,3 +96,7 @@ bun run build
 |------|---------|
 | Initial | Base Next.js template created |
 | + | 45-Day English Speaking Mastery app implemented |
+| + | Database integration with SQLite |
+| + | Admin dashboard for managing content |
+| + | Practice questions and MCQ system |
+| + | Live learning session management |
